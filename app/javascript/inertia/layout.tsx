@@ -32,10 +32,18 @@ type PageProps = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { title, flash, logged_in_user, current_seller } = usePage<PageProps>().props;
   const isRouteLoading = useRouteLoading();
+  const shownFlashMessages = React.useRef<Set<string>>(new Set());
 
   React.useEffect(() => {
     if (flash?.message) {
-      showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
+      // Create a unique key for this flash message
+      const flashKey = `${flash.message}-${flash.status}`;
+
+      // Only show if we haven't shown this exact message before
+      if (!shownFlashMessages.current.has(flashKey)) {
+        showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
+        shownFlashMessages.current.add(flashKey);
+      }
     }
   }, [flash]);
 
@@ -56,10 +64,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 export function LoggedInUserLayout({ children }: { children: React.ReactNode }) {
   const { title, flash, logged_in_user, current_seller } = usePage<PageProps>().props;
+  const shownFlashMessages = React.useRef<Set<string>>(new Set());
 
   React.useEffect(() => {
     if (flash?.message) {
-      showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
+      // Create a unique key for this flash message
+      const flashKey = `${flash.message}-${flash.status}`;
+
+      // Only show if we haven't shown this exact message before
+      if (!shownFlashMessages.current.has(flashKey)) {
+        showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
+        shownFlashMessages.current.add(flashKey);
+      }
     }
   }, [flash]);
 

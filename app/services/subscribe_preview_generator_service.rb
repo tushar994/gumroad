@@ -17,7 +17,8 @@ class SubscribePreviewGeneratorService
 
   def self.generate_pngs(users)
     options = Selenium::WebDriver::Chrome::Options.new(args: CHROME_ARGS)
-    driver = Selenium::WebDriver.for(:chrome, options:)
+    service = Selenium::WebDriver::Service.chrome(args: ["--verbose", "--log-path=/tmp/chromedriver.log"])
+    driver = Selenium::WebDriver.for(:chrome, options: options, service: service)
     users.map do |user|
       url = Rails.application.routes.url_helpers.user_subscribe_preview_url(
         user.username,
