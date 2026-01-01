@@ -1,4 +1,4 @@
-import { Head, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import React from "react";
 
 import { classNames } from "$app/utils/classNames";
@@ -32,18 +32,12 @@ type PageProps = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { title, flash, logged_in_user, current_seller } = usePage<PageProps>().props;
   const isRouteLoading = useRouteLoading();
-  const shownFlashMessages = React.useRef<Set<string>>(new Set());
 
   React.useEffect(() => {
     if (flash?.message) {
-      // Create a unique key for this flash message
-      const flashKey = `${flash.message}-${flash.status}`;
+      showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
 
-      // Only show if we haven't shown this exact message before
-      if (!shownFlashMessages.current.has(flashKey)) {
-        showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
-        shownFlashMessages.current.add(flashKey);
-      }
+      router.reload({ only: ['flash'] });
     }
   }, [flash]);
 
@@ -64,18 +58,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 export function LoggedInUserLayout({ children }: { children: React.ReactNode }) {
   const { title, flash, logged_in_user, current_seller } = usePage<PageProps>().props;
-  const shownFlashMessages = React.useRef<Set<string>>(new Set());
 
   React.useEffect(() => {
     if (flash?.message) {
-      // Create a unique key for this flash message
-      const flashKey = `${flash.message}-${flash.status}`;
+      showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
 
-      // Only show if we haven't shown this exact message before
-      if (!shownFlashMessages.current.has(flashKey)) {
-        showAlert(flash.message, flash.status === "danger" ? "error" : flash.status);
-        shownFlashMessages.current.add(flashKey);
-      }
+      // Clear the flash from the current page's cached props to prevent it from
+      // reappearing when navigating back via browser history
+      router.reload({ only: ['flash'] });
     }
   }, [flash]);
 
